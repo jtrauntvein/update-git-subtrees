@@ -4,3 +4,5 @@ coratools.sln
 coratools.vcxproj.user
 debug_uni/
 release_uni/
+javascript/*.h
+javascript/mkcdecl.*
