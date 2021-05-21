@@ -1,0 +1,17 @@
+<test>
+   <sources>
+      <source name="lndb" type="csidb">
+         <settings
+             db-type="2"
+             db-data-source="tylermecham\sqlexpress"
+             poll-interval="60000"/>
+      </source>
+   </sources>
+   <requests>
+     <request uri="lndb:LoganPeak_QtrHour.AirTemp_Avg">
+       <start option="query" begin="20090901" end="20090930"/>
+     </request>
+   </requests>
+   <expressions>
+   </expressions>
+</test>

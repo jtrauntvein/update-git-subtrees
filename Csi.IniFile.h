@@ -1,0 +1,137 @@
+/* Csi.IniFile.h
+
+   Copyright (C) 2009, 2013 Campbell Scientific, Inc.
+
+   Written by: Jon Trauntvein
+   Date Begun: Monday 14 September 2009
+   Last Change: Wednesday 10 April 2013
+   Last Commit: $Date: 2013-04-10 12:50:33 -0600 (Wed, 10 Apr 2013) $
+   Last Changed by: $Author: jon $
+
+*/
+
+#pragma once
+#ifndef Csi_IniFile_h
+#define Csi_IniFile_h
+
+#include "StrAsc.h"
+#include <list>
+
+
+namespace Csi
+{
+   ////////////////////////////////////////////////////////////
+   // class IniFile
+   //
+   // Defines an object that parses and represents the data structure of an INI
+   // file.  An INI file consists of named sections each of which contains an
+   // ordered sequence of name/value pairs.  
+   ////////////////////////////////////////////////////////////
+   class IniFile
+   {
+   public:
+      ////////////////////////////////////////////////////////////
+      // constructor (default)
+      ////////////////////////////////////////////////////////////
+      IniFile()
+      { }
+
+      ////////////////////////////////////////////////////////////
+      // copy constructor
+      ////////////////////////////////////////////////////////////
+      IniFile(IniFile const &other):
+         sections(other.sections)
+      { }
+
+      ////////////////////////////////////////////////////////////
+      // constructor (read from stream)
+      ////////////////////////////////////////////////////////////
+      IniFile(std::istream &in)
+      { parse(in); }
+
+      ////////////////////////////////////////////////////////////
+      // constructor (read from memory buffer)
+      ////////////////////////////////////////////////////////////
+      IniFile(void const *buff, size_t buff_len)
+      { parse(buff, buff_len); }
+
+      ////////////////////////////////////////////////////////////
+      // copy operator
+      ////////////////////////////////////////////////////////////
+      IniFile &operator =(IniFile const &other)
+      {
+         sections = other.sections;
+         return *this;
+      }
+
+      ////////////////////////////////////////////////////////////
+      // parse
+      ////////////////////////////////////////////////////////////
+      void parse(std::istream &in);
+
+      ////////////////////////////////////////////////////////////
+      // parse
+      ////////////////////////////////////////////////////////////
+      void parse(void const *buff, size_t buff_len);
+
+      // @group: declarations and methods that allow this class to function as
+      // a container of sections
+
+      ////////////////////////////////////////////////////////////
+      // begin
+      ////////////////////////////////////////////////////////////
+      typedef std::pair<StrAsc, StrAsc> key_type;
+      typedef std::list<key_type> keys_type;
+      typedef std::pair<StrAsc, keys_type> value_type;
+      typedef std::list<value_type> sections_type;
+      typedef sections_type::iterator iterator;
+      typedef sections_type::const_iterator const_iterator;
+      iterator begin()
+      { return sections.begin(); }
+      const_iterator begin() const
+      { return sections.begin(); }
+
+      ////////////////////////////////////////////////////////////
+      // end
+      ////////////////////////////////////////////////////////////
+      iterator end()
+      { return sections.end(); }
+      const_iterator end() const
+      { return sections.end(); }
+
+      ////////////////////////////////////////////////////////////
+      // size
+      ////////////////////////////////////////////////////////////
+      typedef sections_type::size_type size_type;
+      size_type size() const
+      { return sections.size(); }
+
+      ////////////////////////////////////////////////////////////
+      // empty
+      ////////////////////////////////////////////////////////////
+      bool empty() const
+      { return sections.empty(); }
+
+      ////////////////////////////////////////////////////////////
+      // clear
+      ////////////////////////////////////////////////////////////
+      void clear()
+      { sections.clear(); }
+      
+      // @endgroup
+
+      ////////////////////////////////////////////////////////////
+      // get_key_value
+      ////////////////////////////////////////////////////////////
+      StrAsc get_key_value(StrAsc const &section, StrAsc const &key);
+
+   private:
+      ////////////////////////////////////////////////////////////
+      // sections
+      ////////////////////////////////////////////////////////////
+      sections_type sections;
+   };
+};
+
+
+#endif

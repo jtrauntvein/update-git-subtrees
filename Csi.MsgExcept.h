@@ -1,0 +1,65 @@
+/* Csi.MsgExcept.h
+
+   Copyright (C) 2005, 2005 Campbell Scientific, Inc.
+
+   Written by: Jon Trauntvein
+   Date Begun: Thursday 24 March 2005
+   Last Change: Thursday 29 December 2005
+   Last Commit: $Date: 2007-02-01 14:58:26 -0600 (Thu, 01 Feb 2007) $ (UTC)
+   Last Changed by: $Author: tmecham $
+
+*/
+
+#ifndef Csi_MsgExcept_h
+#define Csi_MsgExcept_h
+
+#include "trace.h"
+#include "StrAsc.h"
+#include <stdexcept>
+
+
+namespace Csi
+{
+   ////////////////////////////////////////////////////////////
+   // class MsgExcept
+   //
+   // Defines a base class an generalised exception with some string storage
+   ////////////////////////////////////////////////////////////
+   class MsgExcept: public std::exception
+   {
+   protected:
+      ////////////////////////////////////////////////////////////
+      // msg
+      ////////////////////////////////////////////////////////////
+      StrAsc msg;
+      
+   public:
+      ////////////////////////////////////////////////////////////
+      // constructor
+      ////////////////////////////////////////////////////////////
+      MsgExcept(char const *msg_):
+         msg(msg_)
+      { }
+
+      ////////////////////////////////////////////////////////////
+      // destructor
+      ////////////////////////////////////////////////////////////
+      virtual ~MsgExcept() throw ()
+      { }
+      
+      ////////////////////////////////////////////////////////////
+      // why
+      ////////////////////////////////////////////////////////////
+      virtual char const *why() const
+      { return msg.c_str(); }
+
+      ////////////////////////////////////////////////////////////
+      // what
+      ////////////////////////////////////////////////////////////
+      virtual char const *what() const throw ()
+      { return msg.c_str(); } 
+   };
+};
+
+
+#endif

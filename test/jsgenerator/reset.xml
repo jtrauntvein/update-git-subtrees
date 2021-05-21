@@ -1,0 +1,68 @@
+<config>
+  <sources>
+    <source name="ln" type="loggernet">
+      <settings address="192.168.2.114" port="6789" logon="admin" password="admin"/>
+    </source>
+  </sources>
+  <expressions>
+    <expression>
+      StartRelativeToNewest(nsecPerDay, OrderCollected);
+      alias(temp, "ln:mtlogan-ip.QtrHour.AirTemp_avg");
+      TotalOverTimeWithReset(temp, Timestamp(temp), RESET_HOURLY)
+    </expression>
+    <expression>
+      StartRelativeToNewest(2 * nsecPerDay, OrderCollected);
+      alias(temp, "ln:mtlogan-ip.OneHour.AirTemp_avg");
+      TotalOverTimeWithReset(temp, Timestamp(temp), RESET_DAILY)
+    </expression>
+    <expression>
+      StartRelativeToNewest(12 * nsecPerWeek, OrderCollected);
+      alias(temp, "ln:mtlogan-ip.OneDay.AirTemp_max");
+      TotalOverTimeWithReset(temp, Timestamp(temp), RESET_MONTHLY)
+    </expression>
+    <expression>
+      StartRelativeToNewest(60 * nsecPerWeek, OrderCollected);
+      alias(temp, "ln:mtlogan-ip.OneDay.AirTemp_max");
+      TotalOverTimeWithReset(temp, Timestamp(temp), RESET_YEARLY)
+    </expression>
+    <expression>
+      StartRelativeToNewest(nsecPerDay, OrderCollected);
+      alias(temp, "ln:mtlogan-ip.QtrHour.AirTemp_avg");
+      AvgRunOverTimeWithReset(temp, Timestamp(temp), RESET_HOURLY)
+    </expression>
+    <expression>
+      StartRelativeToNewest(nsecPerDay, OrderCollected);
+      alias(temp, "ln:mtlogan-ip.QtrHour.AirTemp_avg");
+      Timestamp(MaxRunOverTimeWithReset(temp, Timestamp(temp), RESET_HOURLY))
+    </expression>
+    <expression>
+      StartRelativeToNewest(nsecPerDay, OrderCollected);
+      alias(temp, "ln:mtlogan-ip.QtrHour.AirTemp_avg");
+      Timestamp(MinRunOverTimeWithReset(temp, Timestamp(temp), RESET_HOURLY))
+    </expression>
+    <expression>
+      StartRelativeToNewest(nsecPerDay, OrderCollected);
+      alias(temp, "ln:mtlogan-ip.OneHour.AirTemp_avg");
+      StdDev(temp, 24)
+    </expression>
+    <expression>
+      StartRelativeToNewest(nsecPerDay, OrderCollected);
+      alias(temp, "ln:mtlogan-ip.OneHour.AirTemp_avg");
+      StdDevOverTime(temp, timestamp(temp), 24 * nsecPerHour)
+    </expression>
+    <expression>
+      StartRelativeToNewest(nsecPerDay, OrderCollected);
+      alias(temp, "ln:mtlogan-ip.QtrHour.AirTemp_avg");
+      StdDevOverTimeWithReset(temp, timestamp(temp), RESET_DAILY)
+    </expression>
+    <expression>
+      StartRelativeToNewest(nsecPerDay, OrderCollected);
+      ValueSynch(mtlogan, "ln:mtlogan-ip.OneHour.AirTemp_avg");
+      ValueSynch(logan, "ln:logan-nw-ip.OneHour.AirTemp_avg");
+      (logan + mtlogan) / 2
+    </expression>
+    <expression>
+      "ln:mtlogan-ip.QtrHour"
+    </expression>
+  </expressions>
+</config>

@@ -1,0 +1,188 @@
+/* File Name: $RCSfile: Cora.Device.TerminalEmulator.h,v $
+
+   Copyright (C) 2002, 2009 Campbell Scientific, Inc.
+
+   Written By: Tyler Mecham
+   Date Begun: 7/9/2002 10:27:46 AM
+
+   Last Changed By: $Author: jon $
+   Last Commit: $Date: 2009-10-23 14:41:01 -0600 (Fri, 23 Oct 2009) $
+   File Revision Number: $Revision: 7127 $
+*/
+
+#ifndef Cora_Device_TerminalEmulator_h
+#define Cora_Device_TerminalEmulator_h
+
+#include "Csi.Events.h"
+#include "StrBin.h"
+#include "Cora.Device.DeviceBase.h"
+
+
+namespace Cora
+{
+   namespace Device
+   {
+      //@group forward declarations
+      class TerminalEmulator;
+      //@endgroup      
+
+      ////////////////////////////////////////////////////////////
+      // Class TerminalEmulatorClient
+      ////////////////////////////////////////////////////////////
+      class TerminalEmulatorClient: public Csi::InstanceValidator
+      {
+      public:
+         ////////////////////////////////////////////////////////////
+         // on_started()
+         // Called after the transaction has been started and reached a steady state
+         ////////////////////////////////////////////////////////////
+         virtual void on_started(TerminalEmulator *tran)
+         { }
+
+         ////////////////////////////////////////////////////////////
+         // on_received()
+         // Called when new bytes have been received
+         ////////////////////////////////////////////////////////////
+         virtual void on_received(TerminalEmulator *tran, bool more, StrBin const &bytes)
+         { }
+
+         ////////////////////////////////////////////////////////////
+         // on_failure()
+         // Called after the transaction has failed
+         ////////////////////////////////////////////////////////////
+         enum failure_type
+         {
+            failure_unknown  = 0,
+            failure_connection_failed = 1,
+            failure_invalid_logon = 2,
+            failure_server_security_blocked = 3,
+            failure_device_name_invalid = 4,
+            failure_already_servicing_tran = 5,
+            failure_comm_disabled = 6,
+            failure_send_failed = 7,
+         };
+         virtual void on_failure(TerminalEmulator *tran, failure_type failure) = 0;
+      };
+
+      
+      class TerminalEmulator: 
+         public DeviceBase, 
+         public Csi::EvReceiver
+      {
+      public:
+         ////////////////////////////////////////////////////////////
+         // constructor
+         ////////////////////////////////////////////////////////////
+         TerminalEmulator();
+
+         ////////////////////////////////////////////////////////////
+         // destructor
+         ////////////////////////////////////////////////////////////
+         ~TerminalEmulator();
+
+         ////////////////////////////////////////////////////////////
+         // get_max_baud_rate
+         ////////////////////////////////////////////////////////////
+         uint4 get_max_baud_rate() const
+         { return max_baud_rate; }
+
+         ////////////////////////////////////////////////////////////
+         // set_max_baud_rate
+         ////////////////////////////////////////////////////////////
+         void set_max_baud_rate(uint4 max_baud_rate_); 
+
+         ////////////////////////////////////////////////////////////
+         // start()
+         ////////////////////////////////////////////////////////////
+         void start(
+            TerminalEmulatorClient *client_,
+            router_handle &router);
+         void start(
+            TerminalEmulatorClient *client_,
+            ClientBase *other_component);
+
+         ////////////////////////////////////////////////////////////
+         // send_bytes
+         // Used to send bytes to the device.  This should only be
+         // called after the client has received the on_started() notification
+         ////////////////////////////////////////////////////////////
+         void send_bytes(StrBin const &bytes);
+
+         ////////////////////////////////////////////////////////////
+         // finish()
+         ////////////////////////////////////////////////////////////
+         void finish();
+
+      protected:
+         ////////////////////////////////////////////////////////////
+         // receive()
+         ////////////////////////////////////////////////////////////
+         virtual void receive(Csi::SharedPtr<Csi::Event> &ev);
+
+         ////////////////////////////////////////////////////////////
+         // onNetMessage()
+         ////////////////////////////////////////////////////////////
+         virtual void onNetMessage(Csi::Messaging::Router *rtr,
+                                   Csi::Messaging::Message *msg);
+
+         ////////////////////////////////////////////////////////////
+         // on_devicebase_failure()
+         ////////////////////////////////////////////////////////////
+         virtual void on_devicebase_failure(devicebase_failure_type failure);
+
+         ////////////////////////////////////////////////////////////
+         // on_devicebase_session_failure()
+         ////////////////////////////////////////////////////////////
+         virtual void on_devicebase_session_failure();
+
+         ////////////////////////////////////////////////////////////
+         // on_devicebase_ready()
+         ////////////////////////////////////////////////////////////
+         virtual void on_devicebase_ready();
+
+      private:
+
+         ////////////////////////////////////////////////////////////
+         // on_term_start_ack()
+         ////////////////////////////////////////////////////////////
+         void on_term_start_ack(Csi::Messaging::Message *msg);
+
+         ////////////////////////////////////////////////////////////
+         // on_term_start_ack()
+         ////////////////////////////////////////////////////////////
+         void on_term_send_ack(Csi::Messaging::Message *msg);
+
+         ////////////////////////////////////////////////////////////
+         // on_term_start_ack()
+         ////////////////////////////////////////////////////////////
+         void on_term_received(Csi::Messaging::Message *msg);
+
+         ////////////////////////////////////////////////////////////
+         // state
+         ////////////////////////////////////////////////////////////
+         enum states
+         {
+            state_standby,
+            state_waiting,
+            state_active,
+         } state;
+
+         ////////////////////////////////////////////////////////////
+         // max_baud_rate
+         ////////////////////////////////////////////////////////////
+         uint4 max_baud_rate;
+
+         ////////////////////////////////////////////////////////////
+         // term_emu_tran
+         ////////////////////////////////////////////////////////////
+         uint4 term_emu_tran;
+
+         ////////////////////////////////////////////////////////////
+         // client
+         ////////////////////////////////////////////////////////////
+         TerminalEmulatorClient *client;
+      };
+   };
+};
+
+#endif

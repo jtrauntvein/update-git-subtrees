@@ -1,0 +1,23 @@
+<test>
+   <sources>
+      <source name="MS_SQL_COMPACT_DB" type="csidb">
+         <settings db-type="3" db-data-source="C:\Campbellsci\LNDB\LNDB.sdf" poll-interval="15000" />
+      </source>
+      
+
+<!-- 
+      <source name="MySQL_DB" type="csidb">
+         <settings db-type="1" db-data-source="KEVIN" poll-interval="15000" />
+      </source>
+
+      <source name="MS_SQL_SERVER_DB" type="csidb">
+         <settings db-type="2" db-user-id="root" db-password="root" db-data-source="KEVIN" db-initial-catalog="test" poll-interval="15000" />
+      </source> 
+      -->
+   </sources>
+   <requests>
+      <request uri="MS_SQL_COMPACT_DB:Public" />
+   </requests>
+   <expressions>
+   </expressions>
+</test>

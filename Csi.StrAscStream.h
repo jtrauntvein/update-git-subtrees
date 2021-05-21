@@ -1,0 +1,149 @@
+/* Csi.StrAscStream.h
+
+   Copyright (C) 2005, 2012 Campbell Scientific, Inc.
+
+   Written by: Jon Trauntvein
+   Date Begun: Friday 11 March 2005
+   Last Change: Thursday 27 September 2012
+   Last Commit: $Date: 2012-09-28 11:05:46 -0600 (Fri, 28 Sep 2012) $ 
+   Last Changed by: $Author: jon $
+
+*/
+
+#ifndef Csi_StrAscStream_h
+#define Csi_StrAscStream_h
+
+#include "StrAsc.h"
+#include <iostream>
+
+
+namespace Csi
+{
+   //@group class forward declarations
+   class OStrAscStream;
+   //@endgroup
+
+   
+   ////////////////////////////////////////////////////////////
+   // class OStrAscStreamBuffer
+   //
+   // Defines a stream buffer that uses a shared pointer to a StrAsc object as
+   // its destination.
+   ////////////////////////////////////////////////////////////
+   class OStrAscStreamBuffer: public std::streambuf
+   {
+   private:
+      ////////////////////////////////////////////////////////////
+      // output
+      ////////////////////////////////////////////////////////////
+      StrAsc output;
+
+      friend class OStrAscStream;
+      
+   public:
+      ////////////////////////////////////////////////////////////
+      // constructor
+      ////////////////////////////////////////////////////////////
+      OStrAscStreamBuffer(StrAsc output_ = StrAsc()):
+         output(output_)
+      { }
+
+      ////////////////////////////////////////////////////////////
+      // overflow
+      ////////////////////////////////////////////////////////////
+      virtual int_type overflow(int_type ch)
+      {
+         output.append(static_cast<char>(ch));
+         return ch;
+      }
+
+      ////////////////////////////////////////////////////////////
+      // xsputn
+      ////////////////////////////////////////////////////////////
+      virtual std::streamsize xsputn(
+         char const *buff,
+         std::streamsize buff_len)
+      {
+         output.append(buff,static_cast<size_t>(buff_len));
+         return buff_len;
+      }
+   };
+
+
+   ////////////////////////////////////////////////////////////
+   // class OStrAscStream
+   ////////////////////////////////////////////////////////////
+   class OStrAscStream:
+      public std::ostream
+   {
+   protected:
+      ////////////////////////////////////////////////////////////
+      // buffer
+      ////////////////////////////////////////////////////////////
+      OStrAscStreamBuffer buffer;
+
+   public:
+      ////////////////////////////////////////////////////////////
+      // constructor
+      ////////////////////////////////////////////////////////////
+      typedef StrAsc string_type;
+      OStrAscStream(StrAsc output = StrAsc()):
+         buffer(output),
+         std::ostream(&buffer)
+      { }
+
+      ////////////////////////////////////////////////////////////
+      // other string constructor (null terminated)
+      ////////////////////////////////////////////////////////////
+      OStrAscStream(StrAsc const &buff):
+         buffer(buff),
+         std::ostream(&buffer)
+      { }
+
+      ////////////////////////////////////////////////////////////
+      // copy constructor
+      ////////////////////////////////////////////////////////////
+      OStrAscStream(OStrAscStream &s):
+         buffer(s.str()),
+         std::ostream(&buffer)
+      { }
+
+      ////////////////////////////////////////////////////////////
+      // str
+      //
+      // Returns the string used by the buffer
+      ////////////////////////////////////////////////////////////
+      StrAsc &str()
+      { return buffer.output; }
+
+      ////////////////////////////////////////////////////////////
+      // str (const version)
+      ////////////////////////////////////////////////////////////
+      StrAsc const &str() const
+      { return buffer.output; }
+
+      ////////////////////////////////////////////////////////////
+      // str (with assignment)
+      ////////////////////////////////////////////////////////////
+      StrAsc &str(StrAsc const &value)
+      {
+         buffer.output = value;
+         return buffer.output;
+      }
+
+      ////////////////////////////////////////////////////////////
+      // c_str
+      ////////////////////////////////////////////////////////////
+      char const *c_str() const
+      { return buffer.output.c_str(); }
+
+      ////////////////////////////////////////////////////////////
+      // length
+      ////////////////////////////////////////////////////////////
+      size_t length() const
+      { return buffer.output.length(); }
+   };
+};
+
+
+#endif

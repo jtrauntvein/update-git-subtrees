@@ -1,0 +1,129 @@
+/* Csi.DevConfig.SerialSessionDriver.h
+
+   Copyright (C) 2008, 2010 Campbell Scientific, Inc.
+
+   Written by: Jon Trauntvein
+   Date Begun: Saturday 24 May 2008
+   Last Change: Saturday 11 December 2010
+   Last Commit: $Date: 2010-12-11 08:04:52 -0600 (Sat, 11 Dec 2010) $
+   Last Changed by: $Author: jon $
+
+*/
+
+#pragma once
+#ifndef Csi_DevConfig_SerialSessionDriver_h
+#define Csi_DevConfig_SerialSessionDriver_h
+
+#include "Csi.DevConfig.Session.h"
+#include "Csi.SerialPortBase.h"
+#include "Csi.LogByte.h"
+
+
+namespace Csi
+{
+   namespace DevConfig
+   {
+      ////////////////////////////////////////////////////////////
+      // class SerialSessionDriver
+      //
+      // Defines an object that can be used as a device configuration session
+      // driver that uses the serial port for communication.  
+      ////////////////////////////////////////////////////////////
+      class SerialSessionDriver:
+         public SessionDriverBase,
+         public SerialPortBase
+      {
+      public:
+         ////////////////////////////////////////////////////////////
+         // constructor
+         ////////////////////////////////////////////////////////////
+         SerialSessionDriver(StrAsc const &serial_port_name_, uint4 baud_rate_);
+
+         ////////////////////////////////////////////////////////////
+         // destructor
+         ////////////////////////////////////////////////////////////
+         virtual ~SerialSessionDriver();
+
+         // @group methods overloaded from Csi::DevConfig::SessionDriverBase
+      
+         ////////////////////////////////////////////////////////////
+         // start_open
+         ////////////////////////////////////////////////////////////
+         virtual void start_open(Csi::DevConfig::Session *session);
+         
+         ////////////////////////////////////////////////////////////
+         // is_open
+         ////////////////////////////////////////////////////////////
+         virtual bool is_open(Csi::DevConfig::Session *session);
+         
+         ////////////////////////////////////////////////////////////
+         // close
+         ////////////////////////////////////////////////////////////
+         virtual void close(Csi::DevConfig::Session *session);
+         
+         ////////////////////////////////////////////////////////////
+         // send
+         ////////////////////////////////////////////////////////////
+         virtual void send(Csi::DevConfig::Session *session, void const *buff, uint4 buff_len);
+         
+         ////////////////////////////////////////////////////////////
+         // set_low_level_log
+         ////////////////////////////////////////////////////////////
+         typedef SharedPtr<LogByte> log_handle;
+         void set_low_level_log(log_handle low_level_log_)
+         { low_level_log = low_level_log_; }
+
+         ////////////////////////////////////////////////////////////
+         // get_low_level_log
+         ////////////////////////////////////////////////////////////
+         log_handle &get_low_level_log()
+         { return low_level_log; }
+         
+      protected:
+         // @group methods overloaded from class Csi::SerialPortBase
+         
+         ////////////////////////////////////////////////////////////
+         // on_error
+         ////////////////////////////////////////////////////////////
+         virtual void on_error(char const *message);
+         
+         ////////////////////////////////////////////////////////////
+         // on_read
+         ////////////////////////////////////////////////////////////
+         virtual void on_read();
+         
+         ////////////////////////////////////////////////////////////
+         // on_open
+         ////////////////////////////////////////////////////////////
+         virtual void on_open();
+         
+         // @endgroup
+         
+      private:
+         ////////////////////////////////////////////////////////////
+         // serial_port_name
+         ////////////////////////////////////////////////////////////
+         StrAsc const serial_port_name;
+         
+         ////////////////////////////////////////////////////////////
+         // baud_rate
+         ////////////////////////////////////////////////////////////
+         uint4 const baud_rate;
+
+         ////////////////////////////////////////////////////////////
+         // read_buffer
+         //
+         // Used to facilitate transfers from the serial port to the driver. 
+         ////////////////////////////////////////////////////////////
+         StrBin read_buffer;
+
+         ////////////////////////////////////////////////////////////
+         // low_level_log
+         ////////////////////////////////////////////////////////////
+         log_handle low_level_log;
+      };
+   };
+};
+
+
+#endif

@@ -1,0 +1,43 @@
+<config>
+  <sources>
+    <source name="lgr" type="http">
+      <settings password="ragnarok314" poll-base="1990-01-01T00:00:00" poll-interval="5000" server-address="192.168.11.197" server-port="80" user-name="jon" db-save-user-id=""></settings>
+    </source>
+  </sources>
+  <expressions>
+<!--
+    <expression>
+      StartAtTime($"20100704", OrderCollected);
+      formatTime(timestamp("lgr:public.settable"), $"%a")
+    </expression>
+    <expression>
+      StartAtTime($"20100704", OrderCollected);
+      formatTime(timestamp("lgr:public.settable"), $"%A")
+    </expression>
+    <expression>
+      StartAtTime($"20100704", OrderCollected);
+      formatTime(timestamp("lgr:public.settable"), $"%U")
+    </expression>
+    <expression>
+      StartAtTime($"20100704", OrderCollected);
+      formatTime(timestamp("lgr:public.settable"), $"%W")
+    </expression>
+-->
+    <expression>
+      StartAtTime($"20100704", OrderCollected);
+      formatTime(timestamp("lgr:public.settable"), $"%w")
+    </expression>
+    <expression>
+      StartAtTime($"20100704", OrderCollected);
+      formatTime(timestamp("lgr:public.settable"), $"%Z")
+    </expression>
+    <expression>
+      StartAtTime($"20100704", OrderCollected);
+      formatTime(timestamp("lgr:public.settable") + (123 * nsecPerMSec), $"%x")
+    </expression>
+    <expression>
+      StartAtTime($"20100704", OrderCollected);
+      formatTime(timestamp("lgr:public.settable") + (123 * nsecPerMSec), $"%4")
+    </expression>
+  </expressions>
+</config>

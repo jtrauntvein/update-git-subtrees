@@ -1,0 +1,78 @@
+<config>
+  <sources>
+    <source name="file" type="file">
+      <settings file-name="c:\work\cora\coratools\test\jsgenerator\avgtest.dat" poll-base="19900101" poll-int="60000" />
+    </source>
+  </sources>
+  <expressions>
+    <expression>
+      StartAtTime(ToDate($"20100801"), OrderCollected);
+      "file:one_hour.temp_degf_avg"
+    </expression>
+    <expression>
+      StartAtTime(ToDate($"20100801"), OrderCollected);
+      AvgRun("file:one_hour.temp_degf_avg", 24)
+    </expression>
+    <expression>
+      StartAtTime(ToDate($"20100801"), OrderCollected);
+      alias(temp, "file:one_hour.temp_degf_avg");
+      MaxRun(temp)
+    </expression>
+    <expression>
+      StartAtTime(ToDate($"20100801"), OrderCollected);
+      alias(temp, "file:one_hour.temp_degf_avg");
+      MinRun(temp)
+    </expression>
+    <expression>
+      StartAtTime(ToDate($"20100801"), OrderCollected);
+      alias(temp, "file:one_hour.temp_degf_avg");
+      Timestamp(MinRun(temp))
+    </expression>
+    <expression>
+      StartAtTime(ToDate($"20100801"), OrderCollected);
+      alias(temp, "file:one_hour.temp_degf_avg");
+      MedianRun(temp, 24)
+    </expression>
+    <expression>
+      StartAtTime(ToDate($"20100801"), OrderCollected);
+      alias(temp, "file:one_hour.temp_degf_avg");
+      Timestamp(ValueAtTime(temp, Timestamp(temp), 1 * nsecPerDay, NaN))
+    </expression>
+    <expression>
+      StartAtTime(ToDate($"20100801"), OrderCollected);
+      alias(temp, "file:one_hour.temp_degf_avg");
+      AvgRunOverTime(temp, Timestamp(temp), 1 * nsecPerDay)
+    </expression>
+    <expression>
+      StartAtTime(ToDate($"20100801"), OrderCollected);
+      alias(temp, "file:one_hour.temp_degf_avg");
+      MaxRunOverTime(temp, Timestamp(temp), 1 * nsecPerDay)
+    </expression>
+    <expression>
+      StartAtTime(ToDate($"20100801"), OrderCollected);
+      alias(temp, "file:one_hour.temp_degf_avg");
+      MinRunOverTime(temp, Timestamp(temp), 1 * nsecPerDay)
+    </expression>
+    <expression>
+      StartAtTime(ToDate($"20100801"), OrderCollected);
+      alias(temp, "file:one_hour.temp_degf_avg");
+      MedianRunOverTime(temp, Timestamp(temp), 1 * nsecPerDay)
+    </expression>
+    <expression>
+      StartAtTime(ToDate($"20100801"), OrderCollected);
+      alias(temp, "file:one_hour.temp_degf_avg");
+      FormatTime(Timestamp(MaxRunOverTime(temp, Timestamp(temp), 1 * nsecPerDay)), $"%Y-%m-%d")
+    </expression>
+    <expression>
+      StartAtTime(ToDate($"20100801"), OrderCollected);
+      alias(temp, "file:one_hour.temp_degf_avg");
+      Total(temp)
+    </expression> 
+    <expression>
+      StartAtTime(ToDate($"20100801"), OrderCollected);
+      alias(temp, "file:one_hour.temp_degf_avg");
+      TotalOverTime(temp, Timestamp(temp), 1 * nsecPerDay)
+    </expression>
+    
+  </expressions>
+</config>

@@ -1,0 +1,38 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+                      "/tools/docbook/docbook-xml/docbookx.dtd">
+
+
+<book>
+  <bookinfo>
+    <title>coratools Library Programmer's Guide and Reference</title>
+    <author><firstname>Jon</firstname><surname>Trauntvein</surname></author>
+    <date>12 Apr 2003</date>
+  </bookinfo>
+
+
+  <chapter><title>Introduction</title>
+ 
+    <section><title>History of coratools</title>
+      <para></para>
+    </section>
+
+    <section><title>Structure of coratools</title>
+    </section>
+  </chapter>
+
+  <chapter><title>Utility Classes and Functions</title>
+    <section xreflabel="ByteQueue">
+      <title>class ByteQueue</title>
+    </section>
+
+    <section xreflabel="Csi::ArrayDimensions">
+      <title>class Csi::ArrayDimensions</title>
+    </section>
+
+    <section xreflabel="Csi::CommandLine">
+      <title>class Csi::CommandLine</title>
+    </section>
+
+  </chapter>
+</book>

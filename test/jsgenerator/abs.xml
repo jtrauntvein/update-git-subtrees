@@ -1,0 +1,40 @@
+<config>
+  <sources>
+    <source name="ln" type="loggernet">
+      <settings address="192.168.2.114" port="6789" logon="admin" password="admin"/>
+    </source>
+  </sources>
+  <expressions>
+    <expression>
+      StartRelativeToNewest(nsecPerDay, OrderCollected);
+      "ln:jon-cr1000.one_hour.temp_degf_avg"
+    </expression>
+    <expression>
+      StartRelativeToNewest(nsecPerDay, OrderCollected);
+      abs(-"ln:jon-cr1000.one_hour.temp_degf_avg")
+    </expression>
+    <expression>
+      StartRelativeToNewest(nsecPerDay, OrderCollected);
+      fix("ln:jon-cr1000.one_hour.temp_degf_avg")
+    </expression>
+    <expression>
+      StartRelativeToNewest(nsecPerDay, OrderCollected);
+      frac("ln:jon-cr1000.one_hour.temp_degf_avg")
+    </expression>
+    <expression>
+      StartRelativeToNewest(nsecPerDay, OrderCollected);
+      alias(temp, "ln:jon-cr1000.one_hour.temp_degf_avg");
+      Ceiling(temp)
+    </expression>
+    <expression>
+      StartRelativeToNewest(nsecPerDay, OrderCollected);
+      alias(temp, "ln:jon-cr1000.one_hour.temp_degf_avg");
+      floor(temp)
+    </expression>
+    <expression>
+      StartRelativeToNewest(nsecPerDay, OrderCollected);
+      alias(temp, "ln:jon-cr1000.one_hour.temp_degf_avg");
+      round(temp, 2)
+    </expression>
+  </expressions>
+</config>

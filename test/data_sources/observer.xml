@@ -1,0 +1,14 @@
+<test>
+  <Sources count="1">
+    <source name="db" type="database">
+      <settings db-data-source="dbservpnuw2ahdxqq5s.database.windows.net" db-initial-catalog="app"
+                db-password="5c52f0b38832ef12afc41c08a68e6ac3bd717b970cfa59ff43f6e64b75670de7cdbbc7ec9c428576" db-type="2"
+                db-use-windows-authentication="false" db-user-id="dbmin" should-poll-meta="true" />
+    </source>
+  </Sources>
+  <requests>
+    <request uri="db:Sterling WeatherHawk_data1.AirTemp_C_Avg">
+      <start option="relative-to-newest" interval="-2678400"/>
+    </request>
+  </requests>
+</test>

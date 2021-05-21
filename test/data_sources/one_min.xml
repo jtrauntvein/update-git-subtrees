@@ -1,0 +1,20 @@
+<test>
+  <sources>
+    <source name="one_min" type="data-file">
+      <settings
+          file-name="c:\campbellsci\loggernet\cr1000_one_hour.dat"
+          poll-base="19900101" 
+          poll-int="5000" />
+    </source>
+  </sources>
+
+  <requests>
+    <request uri="one_min:one_hour">
+      <start option="query" begin="2009-03-04" end="2009-03-31 23:59"/>
+      <order option="collected"/>
+    </request>
+  </requests>
+  <expressions>
+    <expression>iif("one_min:one_hour.temp_degf_avg" &lt; 75, "one_min:one_hour.temp_degf_max", "one_min:one_hour.temp_degf_min")</expression>
+  </expressions>
+</test>
