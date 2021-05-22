@@ -4,5 +4,7 @@ coratools.sln
 coratools.vcxproj.user
 debug_uni/
 release_uni/
+debug_uni64/
+x64/
 javascript/*.h
 javascript/mkcdecl.*
