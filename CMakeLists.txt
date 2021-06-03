@@ -546,7 +546,7 @@ set(graphics_files
   Csi.Graphics.Shapebase.cpp)
 
 
-include_directories(mbedtls/include)
+include_directories(mbedtls/include boost-format)
 
 add_custom_target(javascript ALL
   make
