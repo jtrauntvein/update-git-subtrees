@@ -1,0 +1,34 @@
+{
+  "name": "update-git-subtrees",
+  "version": "1.0.0",
+  "description": "Defines a utility that uses JSON files to keep track of the sources for repositories used as subtrees in the current repository and calling git to update those subtrees.",
+  "main": "update-git-subtrees.js",
+  "bin": {
+    "update-git-subtrees": "index.js"
+  },
+  "scripts": {
+    "test": "npx update-git-subtrees"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jtrauntvein/update-git-subtrees.git"
+  },
+  "keywords": [
+    "git",
+    "subtrees",
+    "recursive"
+  ],
+  "author": "jtrauntvein@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jtrauntvein/update-git-subtrees/issues"
+  },
+  "homepage": "https://github.com/jtrauntvein/update-git-subtrees#readme",
+  "devDependencies": {
+    "eslint": "^7.32.0"
+  },
+  "dependencies": {
+    "command-line-args": "^5.2.0",
+    "recursive-readdir": "^2.2.2"
+  }
+}
