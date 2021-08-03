@@ -1,0 +1,397 @@
+/* Cora.DataSources.CsiDbSource.h
+
+   Copyright (C) 2009, 2017 Campbell Scientific, Inc.
+
+   Written by: Jon Trauntvein
+   Date Begun: Friday 06 February 2009
+   Last Change: Thursday 19 January 2017
+   Last Commit: $Date: 2019-05-15 13:56:06 -0600 (Wed, 15 May 2019) $
+   Last Changed by: $Author: tmecham $
+
+*/
+
+#pragma once
+#ifndef Cora_DataSources_CsiDbSource_h
+#define Cora_DataSources_CsiDbSource_h
+
+#include "Cora.DataSources.SourceBase.h"
+#include "Cora.DataSources.CsiDbSymbol.h"
+#include "Cora.DataSources.CsiDbHelpers.MyThread.h"
+#include "Cora.DataSources.CsiDbHelpers.Cursor.h"
+#include "Cora.DataSources.CsiDbHelpers.DbProperties.h"
+#include "Csi.PolySharedPtr.h"
+#include "OneShot.h"
+#include "Scheduler.h"
+
+
+namespace Cora
+{
+   namespace DataSources
+   {
+      ////////////////////////////////////////////////////////////
+      // class CsiDbSource
+      //
+      // Defines an object that is able to act as a data source using the CSIDB
+      // DLL to access database objects.
+      ////////////////////////////////////////////////////////////
+      class CsiDbSource:
+         public SourceBase,
+         public Csi::EventReceiver,
+         public OneShotClient,
+         public SchedulerClient
+      {
+      public:
+         ////////////////////////////////////////////////////////////
+         // constructor
+         ////////////////////////////////////////////////////////////
+         CsiDbSource(StrUni const &name);
+
+         ////////////////////////////////////////////////////////////
+         // destructor
+         ////////////////////////////////////////////////////////////
+         virtual ~CsiDbSource();
+
+         ////////////////////////////////////////////////////////////
+         // connect
+         ////////////////////////////////////////////////////////////
+         virtual void connect();
+
+         ////////////////////////////////////////////////////////////
+         // disconnect
+         ////////////////////////////////////////////////////////////
+         virtual void disconnect();
+
+         ////////////////////////////////////////////////////////////
+         // is_connected
+         ////////////////////////////////////////////////////////////
+         virtual bool is_connected() const;
+
+         ////////////////////////////////////////////////////////////
+         // get_properties
+         ////////////////////////////////////////////////////////////
+         virtual void get_properties(Csi::Xml::Element &prop_xml);
+
+         ////////////////////////////////////////////////////////////
+         // get_properties
+         ////////////////////////////////////////////////////////////
+         typedef CsiDbHelpers::DbProperties properties_type;
+         properties_type const &get_properties() const
+         { return properties; }
+         
+         ////////////////////////////////////////////////////////////
+         // set_properties
+         ////////////////////////////////////////////////////////////
+         virtual void set_properties(Csi::Xml::Element &prop_xml);
+
+         ////////////////////////////////////////////////////////////
+         // get_type
+         ////////////////////////////////////////////////////////////
+         virtual SymbolBase::symbol_type_code get_type()
+         { return SymbolBase::type_db_source; }
+
+         ////////////////////////////////////////////////////////////
+         // add_request
+         ////////////////////////////////////////////////////////////
+         virtual void add_request(request_handle &request, bool more_to_follow);
+
+         ////////////////////////////////////////////////////////////
+         // remove_request
+         ////////////////////////////////////////////////////////////
+         virtual void remove_request(request_handle &request);
+
+         ////////////////////////////////////////////////////////////
+         // remove_all_requests
+         ////////////////////////////////////////////////////////////
+         virtual void remove_all_requests();
+         
+         ////////////////////////////////////////////////////////////
+         // activate_requests
+         ////////////////////////////////////////////////////////////
+         virtual void activate_requests();
+
+         ////////////////////////////////////////////////////////////
+         // stop
+         ////////////////////////////////////////////////////////////
+         virtual void stop(); 
+
+         ////////////////////////////////////////////////////////////
+         // get_source_symbol
+         ////////////////////////////////////////////////////////////
+         virtual symbol_handle get_source_symbol();
+
+         ////////////////////////////////////////////////////////////
+         // breakdown_uri
+         ////////////////////////////////////////////////////////////
+         virtual void breakdown_uri(symbols_type &symbols, StrUni const &uri);
+
+         ////////////////////////////////////////////////////////////
+         // set_manager
+         ////////////////////////////////////////////////////////////
+         virtual void set_manager(Manager *manager);
+
+         ////////////////////////////////////////////////////////////
+         // enable_poll_schedule
+         ////////////////////////////////////////////////////////////
+         virtual void enable_poll_schedule(bool enabled)
+         { poll_schedule_enabled = enabled; }
+
+         ////////////////////////////////////////////////////////////
+         // receive
+         ////////////////////////////////////////////////////////////
+         virtual void receive(Csi::SharedPtr<Csi::Event> &ev);
+
+         ////////////////////////////////////////////////////////////
+         // onOneShotFired
+         ////////////////////////////////////////////////////////////
+         virtual void onOneShotFired(uint4 id);
+
+         ////////////////////////////////////////////////////////////
+         // onScheduledEvent
+         ////////////////////////////////////////////////////////////
+         virtual void onScheduledEvent(uint4 id);
+
+         ////////////////////////////////////////////////////////////
+         // get_connection
+         ////////////////////////////////////////////////////////////
+         CsiDbHelpers::Dll::connection_handle get_connection()
+         { return db_connection; }
+
+         typedef Csi::SharedPtr<CsiDbHelpers::Cursor> cursor_handle;
+         typedef std::list<cursor_handle> cursors_type;
+
+         ////////////////////////////////////////////////////////////
+         // add_thread_command
+         ////////////////////////////////////////////////////////////
+         void add_thread_command(CsiDbHelpers::MyThread::command_handle &command)
+         { db_thread->add_command(command); }
+
+         ////////////////////////////////////////////////////////////
+         // list_sources
+         //
+         // Retrieves a list of source names and type that are available on this host. 
+         ////////////////////////////////////////////////////////////
+         typedef CsiDbHelpers::Dll::source_names_type source_names_type;
+         typedef source_names_type::value_type source_name_type;
+         static void list_sources(source_names_type &source_names, int source_type = -1);
+
+         ////////////////////////////////////////////////////////////
+         // list_databases
+         //
+         // Retrieves a list of database names for the specified connection
+         // parameters.  If the function fails, an exception derived from
+         // std::exception will be thrown.
+         ////////////////////////////////////////////////////////////
+         typedef CsiDbHelpers::Dll::databases_type databases_type;
+         static void list_databases(databases_type &databases, Csi::Xml::Element &props_xml);
+
+         ////////////////////////////////////////////////////////////
+         // test_connection
+         //
+         // Tests whether a connection can be made using the specified
+         // properties.  If the function fails, an exception derived from
+         // std::exception will be thrown.
+         ////////////////////////////////////////////////////////////
+         static void test_connection(Csi::Xml::Element &props_xml);
+         
+         ////////////////////////////////////////////////////////////
+         // get_table_range
+         ////////////////////////////////////////////////////////////
+         virtual void get_table_range(
+            Csi::EventReceiver *client, StrUni const &uri); 
+         
+         // @group: property attribute names
+
+         ////////////////////////////////////////////////////////////
+         // db_type_name
+         //
+         // Identifies the attribute the specifies the database type. This
+         // should be an integer that has one of three values:
+         //
+         //  1 - MySQL
+         //  2 - MS SQL Server
+         //  3 - MS SQL Server Compact
+         //  4 - PostgreSQL
+         //  5 - Oracle
+         ////////////////////////////////////////////////////////////
+         static StrUni const db_type_name;
+
+         ////////////////////////////////////////////////////////////
+         // db_use_windows_authentication_name
+         //
+         // The name of the boolean property that specifies whether windows
+         // domain authentication should be used when connecting to a SQL
+         // server database.
+         ////////////////////////////////////////////////////////////
+         static StrUni const db_use_windows_authentication_name;
+
+         ////////////////////////////////////////////////////////////
+         // db_save_user_id_name
+         ////////////////////////////////////////////////////////////
+         static StrUni const db_save_user_id_name;
+         
+         ////////////////////////////////////////////////////////////
+         // db_user_id_name
+         //
+         // Identifies the attribute (a string) that will give the user ID for
+         // the database.  This attribute is optional (defaults to an empty
+         // string) and is not used for the MS SQL Server compact. 
+         ////////////////////////////////////////////////////////////
+         static StrUni const db_user_id_name;
+
+         ////////////////////////////////////////////////////////////
+         // db_password_name
+         //
+         // Identifies the attribute (a string) that will give the password for
+         // the database.  This attribute is optional (defaults to an empty
+         // string). 
+         ////////////////////////////////////////////////////////////
+         static StrUni const db_password_name;
+
+         ////////////////////////////////////////////////////////////
+         // db_data_source_name
+         //
+         // Identifies the attribute (a string) that will specify the data
+         // source (a path/address/or ODBC source name) for the data server.
+         // This attribute is required.
+         ////////////////////////////////////////////////////////////
+         static StrUni const db_data_source_name;
+
+         ////////////////////////////////////////////////////////////
+         // db_initial_catalog_name
+         //
+         // Identifies the attribute (a string) that will specify the "initial
+         // catalog" when used with a SQL server data source.  This parameter
+         // is optional unless the db_type attribute is set to a value of two. 
+         ////////////////////////////////////////////////////////////
+         static StrUni const db_initial_catalog_name;
+
+         ////////////////////////////////////////////////////////////
+         // poll_interval_name
+         //
+         // Identifies the attribute (an unsigned integer) that will specify
+         // the interval at which the data source will be polled for new data.
+         // This attribute is required. 
+         ////////////////////////////////////////////////////////////
+         static StrUni const poll_interval_name;
+
+         /**
+          * Identifies the attribute (a bool) that will specify whether the meta table should be
+          * queried for new requests.
+          */
+         static StrUni const should_poll_meta_name;
+
+         // @endgroup
+         
+      private:
+         ////////////////////////////////////////////////////////////
+         // on_connect_complete
+         ////////////////////////////////////////////////////////////
+         void on_connect_complete(CsiDbHelpers::ConnectCommand *command);
+         
+      private:
+         ////////////////////////////////////////////////////////////
+         // symbol
+         ////////////////////////////////////////////////////////////
+         Csi::PolySharedPtr<SymbolBase, CsiDbSymbol> symbol;
+
+         ////////////////////////////////////////////////////////////
+         // connect_count
+         //
+         // Tracks the number of this type of source that has been created.
+         // This is used to control the singleton thread lifetime.
+         ////////////////////////////////////////////////////////////
+         static int connect_count;
+
+         ////////////////////////////////////////////////////////////
+         // db_connection
+         ////////////////////////////////////////////////////////////
+         CsiDbHelpers::Dll::connection_handle db_connection;
+
+         ////////////////////////////////////////////////////////////
+         // connection_pending
+         ////////////////////////////////////////////////////////////
+         bool connection_pending;
+
+         ////////////////////////////////////////////////////////////
+         // was_connected
+         ////////////////////////////////////////////////////////////
+         bool was_connected;
+
+         ////////////////////////////////////////////////////////////
+         // retry_id
+         ////////////////////////////////////////////////////////////
+         uint4 retry_id;
+
+         ////////////////////////////////////////////////////////////
+         // timer
+         ////////////////////////////////////////////////////////////
+         Csi::SharedPtr<OneShot> timer;
+
+         ////////////////////////////////////////////////////////////
+         // db_thread
+         ////////////////////////////////////////////////////////////
+         static Csi::SharedPtr<CsiDbHelpers::MyThread> db_thread;
+
+         ////////////////////////////////////////////////////////////
+         // cursors
+         ////////////////////////////////////////////////////////////
+         cursors_type cursors;
+
+         ////////////////////////////////////////////////////////////
+         // scheduler
+         ////////////////////////////////////////////////////////////
+         Csi::SharedPtr<Scheduler> scheduler;
+
+         ////////////////////////////////////////////////////////////
+         // poll_schedule
+         ////////////////////////////////////////////////////////////
+         uint4 poll_schedule;
+
+         ////////////////////////////////////////////////////////////
+         // poll_schedule_enabled
+         ////////////////////////////////////////////////////////////
+         bool poll_schedule_enabled;
+
+         ////////////////////////////////////////////////////////////
+         // properties
+         ////////////////////////////////////////////////////////////
+         CsiDbHelpers::DbProperties properties;
+      };
+
+
+      namespace CsiDbHelpers
+      {
+         ////////////////////////////////////////////////////////////
+         // class event_connect_failure
+         ////////////////////////////////////////////////////////////
+         class event_connect_failure: public Csi::Event
+         {
+         public:
+            ////////////////////////////////////////////////////////////
+            // event_id
+            ////////////////////////////////////////////////////////////
+            static uint4 const event_id;
+
+            ////////////////////////////////////////////////////////////
+            // cpost
+            ////////////////////////////////////////////////////////////
+            static void cpost(CsiDbSource *source)
+            {
+               event_connect_failure *event(new event_connect_failure(source));
+               event->post();
+            }
+
+         private:
+            ////////////////////////////////////////////////////////////
+            // constructor
+            ////////////////////////////////////////////////////////////
+            event_connect_failure(CsiDbSource *source):
+               Event(event_id, source)
+            { }
+         };
+      };
+   };
+};
+
+
+#endif

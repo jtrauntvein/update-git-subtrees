@@ -1,0 +1,1 @@
+debug\jsgenerator.exe %1 c:\campbellsci\csiwebserver\test

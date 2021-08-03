@@ -1,0 +1,55 @@
+<config>
+  <sources>
+    <source name="file" type="file">
+      <settings file-name="c:\work\cora\coratools\test\jsgenerator\teststr.dat" poll-base="19900101" poll-int="60000" />
+    </source>
+  </sources>
+  <expressions>
+    <expression>
+      StartAtTime($"20100701", OrderCollected);
+      "file:test.a1"
+    </expression>
+    <expression>
+      StartAtTime($"20100701", OrderCollected);
+      strcomp("file:test.a1", last("file:test.a1"))
+    </expression>
+    <expression>
+      StartAtTime($"20100701", OrderCollected);
+      instr(1, "file:test.a1", $"aglay")
+    </expression>
+    <expression>
+      StartAtTime($"20100701", OrderCollected);
+      instrrev(0, "file:test.a1", $"aglay")
+    </expression>
+    <expression>
+      StartAtTime($"20100701", OrderCollected);
+      alias(a1, "file:test.a1");
+      StrReverse(a1)
+    </expression>
+    <expression>
+      StartAtTime($"20100701", OrderCollected);
+      alias(a1, "file:test.a1");
+      len(space(len(a1))) = len(a1)
+    </expression>
+    <expression>
+      StartAtTime($"20100701", OrderCollected);
+      alias(a1, "file:test.a1");
+      Left(a1, instr(1, a1, $"aglay") - 1)
+    </expression>
+    <expression>
+      StartAtTime($"20100701", OrderCollected);
+      alias(a1, "file:test.a1");
+      Right(a1, instr(1, a1, $"aglay") - 1)
+    </expression>
+    <expression>
+      StartAtTime($"20100701", OrderCollected);
+      alias(a1, "file:test.a1");
+      len(LTrim(space(5) + a1)) = len(a1)
+    </expression>
+    <expression>
+      StartAtTime($"20100701", OrderCollected);
+      alias(a1, "file:test.a1");
+      len(RTrim(a1 + space(5))) = len(a1)
+    </expression>
+  </expressions>
+</config>

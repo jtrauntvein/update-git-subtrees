@@ -1,0 +1,98 @@
+/* Csi.Posix.Thread.h
+
+   Copyright (C) 2005, 2011 Campbell Scientific, Inc.
+
+   Written by: Jon Trauntvein
+   Date Begun: Thursday 14 April 2005
+   Last Change: Monday 17 October 2011
+   Last Commit: $Date: 2011-10-17 15:40:02 -0600 (Mon, 17 Oct 2011) $ 
+   Last Changed by: $Author: jon $
+
+*/
+
+#ifndef Csi_Posix_Thread_h
+#define Csi_Posix_Thread_h
+#include <pthread.h>
+
+
+
+namespace Csi
+{
+   namespace Posix
+   {
+      ////////////////////////////////////////////////////////////
+      // class Thread
+      //
+      // This class represents another thread of execution.  The state
+      // represents whether the other thread is started or stopped, the
+      // identifier for the other thread.  It defines a pure virtual method,
+      // execute(), which must be overloaded by a derived class to accomplish
+      // the specific work of the thread.  
+      ////////////////////////////////////////////////////////////
+      class Thread
+      {
+      protected:
+         ////////////////////////////////////////////////////////////
+         // thread_handle
+         ////////////////////////////////////////////////////////////
+         pthread_t thread_handle;
+         
+         ////////////////////////////////////////////////////////////
+         // is_started
+         ////////////////////////////////////////////////////////////
+         bool is_started;
+
+         ////////////////////////////////////////////////////////////
+         // needs_to_join
+         ////////////////////////////////////////////////////////////
+         bool needs_to_join;
+         
+      public:
+         ////////////////////////////////////////////////////////////
+         // constructor
+         ////////////////////////////////////////////////////////////
+         Thread():
+            is_started(false),
+            needs_to_join(false)
+         { }
+
+         ////////////////////////////////////////////////////////////
+         // destructor
+         ////////////////////////////////////////////////////////////
+         virtual ~Thread();
+
+         ////////////////////////////////////////////////////////////
+         // start
+         ////////////////////////////////////////////////////////////
+         virtual void start();
+
+         ////////////////////////////////////////////////////////////
+         // wait_for_end
+         ////////////////////////////////////////////////////////////
+         virtual void wait_for_end();
+
+         ////////////////////////////////////////////////////////////
+         // signal_urgent
+         //
+         // Sends a SIGURG (out of band data wating) signal to the thread (if
+         // it is started).  This is useful for interrupting a thread that is
+         // blocked so that it can process application data.
+         ////////////////////////////////////////////////////////////
+         virtual void signal_urgent();
+
+      protected:
+         ////////////////////////////////////////////////////////////
+         // execute
+         ////////////////////////////////////////////////////////////
+         virtual void execute() = 0;
+
+         ////////////////////////////////////////////////////////////
+         // thread_func
+         ////////////////////////////////////////////////////////////
+         static void *thread_func(void *arg);
+      };
+   };
+};
+
+
+#endif

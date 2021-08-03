@@ -1,0 +1,15 @@
+<config>
+  <sources>
+    <source name="ln" type="loggernet">
+      <settings address="192.168.2.114" port="6789" logon="admin" password="admin"/>
+    </source>
+  </sources>
+  <expressions>
+    <expression>
+      StartRelativeToNewest(nsecPerDay, OrderCollected);
+      ValueSynch(mtlogan, "ln:mtlogan-ip.OneHour.AirTemp_avg");
+      ValueSynch(logan, "ln:logan-nw-ip.OneHour.AirTemp_avg");
+      ((logan + mtlogan) / 2) * 1.8 + 32
+    </expression>
+  </expressions>
+</config>

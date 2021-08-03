@@ -1,0 +1,26 @@
+/* CsiToInt.js
+
+   Copyright (C) 2010, 2018 Campbell Scientific, Inc.
+
+   Written by: Jon Trauntvein
+   Date Begun: Tuesday 27 July 2010
+   Last Change: Wednesday 09 May 2018
+   Last Commit: $Date: 2018-05-10 16:28:37 -0600 (Thu, 10 May 2018) $
+   Last Changed by: $Author: jon $
+
+*/
+
+/**
+ * Defines the function that converts its operand to an integer.
+ */
+function CsiToInt()
+{ }
+CsiToInt.prototype = new CsiExprFunction();
+CsiExprToken.add_creator("ToInt", function() { return new CsiToInt(); });
+
+CsiToInt.prototype.evaluate = function(operands, tokens)
+{
+   var op1 = operands.pop();
+   operands.push(new CsiOperand(op1.get_val_int(), op1.timestamp));
+};
+
