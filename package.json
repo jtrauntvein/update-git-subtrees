@@ -7,7 +7,7 @@
     "update-git-subtrees": "index.js"
   },
   "scripts": {
-    "test": "npx update-git-subtrees"
+    "test": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -26,9 +26,5 @@
   "homepage": "https://github.com/jtrauntvein/update-git-subtrees#readme",
   "devDependencies": {
     "eslint": "^7.32.0"
-  },
-  "dependencies": {
-    "command-line-args": "^5.2.0",
-    "recursive-readdir": "^2.2.2"
   }
 }

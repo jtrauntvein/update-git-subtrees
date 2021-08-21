@@ -1,54 +1,35 @@
 const path = require("path");
-const read_dir = require("recursive-readdir");
-const child_process = require("child-process");
-
-
-/**
- * @return {object[]} Returns the list of subtree index files to process.
- * @param {boolean} options.recursive Set to true if subdirectories should be searched
- * @param {string} options.dir Specifies the repository directory to update.
- */
-async function build_subtree_index({ recursive, dir })
-{
-   let subtree_files = [ path.join(dir, ".subtrees.json") ];
-   if(recursive)
-   {
-      subtree_files = await read_dir(dir, (candidate) => {
-         return candidate !== ".subtrees.json";
-      });
-   }
-   return subtree_files.map((subtree_file) => {
-      const rtn = require(subtree_file);
-      rtn.dir = path.dirname(subtree_file);
-      return rtn;
-   });
-}
+const child_process = require("child_process");
+const subtrees_file_name = ".subtrees.json";
 
 /**
  * @return {Promise} Returns a promise that, when complete, will have updated the 
  * subtrees in the current directory and, optionally, subtrees in subdirectories.
  * 
- * @param {boolean} options.recursive Set to true if the child subtrees should also be updated.
- * @param {string} options.dir Specifies the repository directory to update.
+ * @param {string} dir Specifies the repository directory to update.
  */
-async function do_update_subtrees({ recursive, dir })
+async function do_update_subtrees(dir)
 {
    // We need to put together a collection of all of the files that will be processed.
-   const files = build_subtree_index({ recursive, dir });
-   const promises = files.reverse().reduce((accum, file) => {
-      accum.push(new Promise((accept, reject) => {
+   const subtrees = require(path.join(dir, subtrees_file_name));
+   process.chdir(dir);
+   console.info(`working in ${process.cwd()}`);
+   for(let subtree of subtrees)
+   {
+      await new Promise((accept, reject) => {
          const git_proc = child_process.spawn("git", [ 
             "subtree", 
             "pull", 
-            `--prefix=${path.join(file.dir, file.prefix)}`, 
-            file.repo, 
-            "HEAD",
-            "--squash"]);
+            `--prefix=${subtree.prefix}`,
+            "--squash",
+            subtree.repo, 
+            subtree.branch || "HEAD"
+         ]);
          git_proc.stdout.on("data", (data) => {
-            console.log(data);
+            console.log(data.toString());
          });
          git_proc.stderr.on("data", (data) => {
-            console.error(data);
+            console.error(data.toString());
          });
          git_proc.on("exit", (code) => {
             if(code == 0)
@@ -56,9 +37,8 @@ async function do_update_subtrees({ recursive, dir })
             else
                reject(new Error("git-subtree failed"));
          })
-      }));
-   }, []);
-   await Promise.all(promises);
+      });
+   }
 }
 
 module.exports = do_update_subtrees;
