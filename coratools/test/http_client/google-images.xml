@@ -1,3 +1,0 @@
-<requests>
-  <GET uri="https://cert-test.sandbox.google.com" output="cert-test.html"/>
-</requests>
