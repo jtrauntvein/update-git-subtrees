@@ -19,7 +19,13 @@ async function do_update_subtrees(dir)
    for(let subtree of subtrees)
    {
       await new Promise((accept, reject) => {
-         const prefix_stat = fs.statSync(subtree.prefix, { throwIfNoEntry: false });
+         let prefix_stat = undefined;
+         try {
+            prefix_stat = fs.statSync(subtree.prefix, { throwIfNoEntry: false });
+         }
+         catch(err) { 
+            prefix_stat = undefined;
+         }
          const op = (prefix_stat && prefix_stat.isDirectory() ? "pull" : "add");
          const git_proc = child_process.spawn("git", [ 
             "subtree", 
