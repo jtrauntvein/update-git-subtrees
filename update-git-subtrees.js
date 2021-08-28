@@ -1,6 +1,8 @@
 const path = require("path");
 const child_process = require("child_process");
 const subtrees_file_name = ".subtrees.json";
+const fs = require("fs");
+
 
 /**
  * @return {Promise} Returns a promise that, when complete, will have updated the 
@@ -17,9 +19,11 @@ async function do_update_subtrees(dir)
    for(let subtree of subtrees)
    {
       await new Promise((accept, reject) => {
+         const prefix_stat = fs.statSync(subtree.prefix, { throwIfNoEntry: false });
+         const op = (prefix_stat && prefix_stat.isDirectory() ? "pull" : "add");
          const git_proc = child_process.spawn("git", [ 
             "subtree", 
-            "pull", 
+            op, 
             `--prefix=${subtree.prefix}`,
             "--squash",
             subtree.repo, 
