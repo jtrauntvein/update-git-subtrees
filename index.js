@@ -43,8 +43,14 @@ async function main()
          choices: subtrees.reduce((accum, subtree) => {
             // we can only push from directories that already exist
             const subtree_path = path.join(dir, subtree.prefix);
-            const subtree_stat = fs.statSync(subtree_path);
-            if(subtree_stat.isDirectory())
+            let subtree_stat;
+            try {
+               subtree_stat = fs.statSync(subtree_path);
+            }
+            catch(error) {
+               subtree_stat = null;
+            }
+            if(subtree_stat && subtree_stat.isDirectory())
                accum.push({ 
                   title: subtree.prefix, 
                   value: subtree.prefix,

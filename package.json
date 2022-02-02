@@ -1,6 +1,6 @@
 {
   "name": "update-git-subtrees",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Defines a utility that uses JSON files to keep track of the sources for repositories used as subtrees in the current repository and calling git to update those subtrees.",
   "main": "update-git-subtrees.js",
   "bin": {
