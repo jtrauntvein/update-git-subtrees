@@ -133,7 +133,6 @@ async function do_push_subtrees({ dir = process.cwd(), subtrees = null, selected
                "subtree",
                "push",
                `--prefix=${subtree.prefix}`,
-               "--squash",
                subtree.repo,
                subtree.branch || "main"
             ]);
